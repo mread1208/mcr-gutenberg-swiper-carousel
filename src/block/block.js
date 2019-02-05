@@ -6,9 +6,10 @@
  */
 
 //  Import CSS.
-import './style.scss';
-import './editor.scss';
+import "./style.scss";
+import "./editor.scss";
 
+const { Component } = wp.element;
 const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
 
@@ -25,16 +26,12 @@ const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.b
  * @return {?WPBlock}          The block, if it has been successfully
  *                             registered; otherwise `undefined`.
  */
-registerBlockType( 'cgb/block-mcr-image-carousel', {
+registerBlockType("cgb/block-mcr-image-carousel", {
 	// Block name. Block names must be string that contains a namespace prefix. Example: my-plugin/my-custom-block.
-	title: __( 'mcr-image-carousel - CGB Block' ), // Block title.
-	icon: 'shield', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
-	category: 'common', // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
-	keywords: [
-		__( 'mcr-image-carousel — CGB Block' ),
-		__( 'CGB Example' ),
-		__( 'create-guten-block' ),
-	],
+	title: __("MCR Image Carousel"), // Block title.
+	icon: "images-alt2", // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
+	category: "common", // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
+	keywords: [__("mcr-image-carousel"), __("Image Carousel")],
 
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
@@ -44,24 +41,49 @@ registerBlockType( 'cgb/block-mcr-image-carousel', {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	edit: function( props ) {
-		// Creates a <p class='wp-block-cgb-block-mcr-image-carousel'></p>.
-		return (
-			<div className={ props.className }>
-				<p>— Hello from the backend.</p>
-				<p>
-					CGB BLOCK: <code>mcr-image-carousel</code> is a new Gutenberg block
-				</p>
-				<p>
-					It was created via{ ' ' }
-					<code>
-						<a href="https://github.com/ahmadawais/create-guten-block">
-							create-guten-block
-						</a>
-					</code>.
-				</p>
-			</div>
-		);
+	// edit: function(props) {
+	edit: class extends Component {
+		constructor(props) {
+			super(...arguments);
+			this.props = props;
+
+			// 	// this.onTitleChange = this.onTitleChange.bind(this);
+			// 	// this.updateSelectedPosts = this.updateSelectedPosts.bind(this);
+		}
+
+		componentDidMount() {
+			new Swiper(".js-mcr-swiper-container", {
+				navigation: {
+					nextEl: ".js-mcr-swiper-button-next",
+					prevEl: ".js-mcr-swiper-button-prev"
+				},
+				pagination: {
+					el: ".swiper-pagination"
+				},
+				loop: true,
+				speed: 500
+			});
+		}
+		render() {
+			const { className } = this.props;
+			return (
+				<div
+					className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
+				>
+					<div class="swiper-wrapper mcr-swiper-wrapper">
+						<div class="swiper-slide mcr-swiper-slide">
+							<img src="https://via.placeholder.com/1090x450" alt="" />
+						</div>
+						<div class="swiper-slide mcr-swiper-slide">
+							<img src="https://via.placeholder.com/1090x450" alt="" />
+						</div>
+					</div>
+					<div class="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
+					<div class="js-mcr-swiper-button-next swiper-button-prev mcr-swiper-button-next" />
+					<div class="swiper-pagination mcr-swiper-pagination" />
+				</div>
+			);
+		}
 	},
 
 	/**
@@ -72,22 +94,23 @@ registerBlockType( 'cgb/block-mcr-image-carousel', {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	save: function( props ) {
+	save: function(props) {
 		return (
-			<div>
-				<p>— Hello from the frontend.</p>
-				<p>
-					CGB BLOCK: <code>mcr-image-carousel</code> is a new Gutenberg block.
-				</p>
-				<p>
-					It was created via{ ' ' }
-					<code>
-						<a href="https://github.com/ahmadawais/create-guten-block">
-							create-guten-block
-						</a>
-					</code>.
-				</p>
+			<div
+				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
+			>
+				<div class="swiper-wrapper mcr-swiper-wrapper">
+					<div class="swiper-slide mcr-swiper-slide">
+						<img src="https://via.placeholder.com/1090x450" alt="" />
+					</div>
+					<div class="swiper-slide mcr-swiper-slide">
+						<img src="https://via.placeholder.com/1090x450" alt="" />
+					</div>
+				</div>
+				<div class="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
+				<div class="js-mcr-swiper-button-next swiper-button-prev mcr-swiper-button-next" />
+				<div class="swiper-pagination mcr-swiper-pagination" />
 			</div>
 		);
-	},
-} );
+	}
+});

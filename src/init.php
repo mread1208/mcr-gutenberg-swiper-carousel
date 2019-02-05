@@ -21,12 +21,26 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function mcr_image_carousel_cgb_block_assets() { // phpcs:ignore
 	// Styles.
+	wp_register_style('swiper', "https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/css/swiper.css", false, '', 'all');
+	
+	wp_enqueue_style('swiper');
 	wp_enqueue_style(
 		'mcr_image_carousel-cgb-style-css', // Handle.
 		plugins_url( 'dist/blocks.style.build.css', dirname( __FILE__ ) ), // Block style CSS.
 		array( 'wp-editor' ) // Dependency to include the CSS after it.
 		// filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.style.build.css' ) // Version: File modification time.
 	);
+
+	wp_register_script('swiper', "https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.min.js", '', '', true);
+	wp_enqueue_script('swiper');
+	// import swiper init
+	// wp_enqueue_script(
+	// 	'mcr_image_carousel-swiper-init-js', // Handle.
+	// 	plugins_url( 'dist/swiper-init.build.js', dirname( __FILE__ ) ), // Block.build.js: We register the block here. Built with Webpack.
+	// 	"", // Dependencies, defined above.
+	// 	// filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.build.js' ), // Version: File modification time.
+	// 	true // Enqueue the script in the footer.
+	// );
 }
 
 // Hook: Frontend assets.
