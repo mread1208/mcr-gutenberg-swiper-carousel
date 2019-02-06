@@ -33,14 +33,8 @@ function mcr_image_carousel_cgb_block_assets() { // phpcs:ignore
 
 	wp_register_script('swiper', "https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.min.js", '', '', true);
 	wp_enqueue_script('swiper');
-	// import swiper init
-	// wp_enqueue_script(
-	// 	'mcr_image_carousel-swiper-init-js', // Handle.
-	// 	plugins_url( 'dist/swiper-init.build.js', dirname( __FILE__ ) ), // Block.build.js: We register the block here. Built with Webpack.
-	// 	"", // Dependencies, defined above.
-	// 	// filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.build.js' ), // Version: File modification time.
-	// 	true // Enqueue the script in the footer.
-	// );
+	wp_register_script('mcr_image_carousel-swiper-init-js', plugins_url( 'src/js/swiper-init.js', dirname( __FILE__ ) ), array("swiper"), '', true);
+	wp_enqueue_script('mcr_image_carousel-swiper-init-js');
 }
 
 // Hook: Frontend assets.

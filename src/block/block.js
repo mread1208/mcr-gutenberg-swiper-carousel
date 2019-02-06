@@ -9,9 +9,11 @@
 import "./style.scss";
 import "./editor.scss";
 
-const { Component } = wp.element;
+const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
+const { MediaUpload, MediaPlaceholder } = wp.editor;
+const { Button } = wp.components;
 
 /**
  * Register: aa Gutenberg Block.
@@ -32,6 +34,20 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	icon: "images-alt2", // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
 	category: "common", // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
 	keywords: [__("mcr-image-carousel"), __("Image Carousel")],
+	attributes: {
+		imageAlt: {
+			attribute: "alt",
+			selector: ".card__image"
+		},
+		imageUrl: {
+			attribute: "src",
+			selector: ".card__image"
+		},
+		images: {
+			type: "array",
+			default: []
+		}
+	},
 
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
@@ -41,47 +57,101 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	// edit: function(props) {
-	edit: class extends Component {
-		constructor(props) {
-			super(...arguments);
-			this.props = props;
 
-			// 	// this.onTitleChange = this.onTitleChange.bind(this);
-			// 	// this.updateSelectedPosts = this.updateSelectedPosts.bind(this);
-		}
+	edit: function({ attributes, className, setAttributes }) {
+		const { images } = attributes;
 
-		componentDidMount() {
-			new Swiper(".js-mcr-swiper-container", {
-				navigation: {
-					nextEl: ".js-mcr-swiper-button-next",
-					prevEl: ".js-mcr-swiper-button-prev"
-				},
-				pagination: {
-					el: ".swiper-pagination"
-				},
-				loop: true,
-				speed: 500
-			});
-		}
-		render() {
-			const { className } = this.props;
+		const getImageButton = openEvent => {
 			return (
-				<div
-					className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
-				>
-					<div class="swiper-wrapper mcr-swiper-wrapper">
-						<div class="swiper-slide mcr-swiper-slide">
-							<img src="https://via.placeholder.com/1090x450" alt="" />
-						</div>
-						<div class="swiper-slide mcr-swiper-slide">
-							<img src="https://via.placeholder.com/1090x450" alt="" />
-						</div>
+				<div>
+					<img src={images.imageUrl} onClick={openEvent} className="image" />
+					<div className="button-container">
+						<Button onClick={openEvent} className="button button-large">
+							Add an image
+						</Button>
+						<Button onClick={openEvent} className="button button-large">
+							Remove image
+						</Button>
 					</div>
-					<div class="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
-					<div class="js-mcr-swiper-button-next swiper-button-prev mcr-swiper-button-next" />
-					<div class="swiper-pagination mcr-swiper-pagination" />
 				</div>
+			);
+		};
+
+		const removeImage = function(image) {
+			console.log(image);
+		};
+
+		const onSelectImages = function(images) {
+			setAttributes({
+				images: images.map(img => {
+					return {
+						id: img.id,
+						url: img.sizes.full.url,
+						alt: img.alt,
+						caption: img.caption
+					};
+				})
+			});
+		};
+
+		// return (
+		// 	<div>
+		// 		<MediaPlaceholder
+		// 			icon="format-gallery"
+		// 			onSelect={onSelectImages}
+		// 			accept="image/*"
+		// 			type="image"
+		// 			multiple
+		// 		/>
+		// 		<MediaUpload
+		// 			onSelect={media => {
+		// 				setAttributes({ imageAlt: media.alt, imageUrl: media.url });
+		// 			}}
+		// 			type="image"
+		// 			value={attributes.imageID}
+		// 			render={({ open }) => getImageButton(open)}
+		// 		/>
+		// 	</div>
+		// );
+
+		if (images.length > 0) {
+			return (
+				<Fragment>
+					{images.map((img, index) => {
+						return [
+							<div>
+								<img src={img.url} alt={img.alt} />
+								<div className="button-container">
+									<Button
+										onClick={removeImage(img)}
+										className="button button-large"
+									>
+										Remove image
+									</Button>
+								</div>
+							</div>
+						];
+					})}
+				</Fragment>
+			);
+		} else {
+			return (
+				<Fragment>
+					<div className={className}>
+						<MediaPlaceholder
+							icon="format-gallery"
+							className={className}
+							labels={{
+								title: __("Carousel"),
+								name: __("images")
+							}}
+							onSelect={onSelectImages}
+							accept="image/*"
+							type="image"
+							multiple
+						/>
+					</div>
+				</Fragment>
 			);
 		}
 	},
@@ -107,9 +177,10 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 						<img src="https://via.placeholder.com/1090x450" alt="" />
 					</div>
 				</div>
-				<div class="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
-				<div class="js-mcr-swiper-button-next swiper-button-prev mcr-swiper-button-next" />
 				<div class="swiper-pagination mcr-swiper-pagination" />
+
+				<div class="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
+				<div class="js-mcr-swiper-button-next swiper-button-next mcr-swiper-button-next" />
 			</div>
 		);
 	}
