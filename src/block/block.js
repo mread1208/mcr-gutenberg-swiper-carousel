@@ -12,7 +12,7 @@ import "./editor.scss";
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
-const { MediaUpload, MediaPlaceholder } = wp.editor;
+const { MediaUpload, MediaPlaceholder, MediaUploadCheck } = wp.editor;
 const { Button } = wp.components;
 
 /**
@@ -78,14 +78,45 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		};
 
 		const removeImage = function(image) {
-			console.log(image);
+			// console.log(image);
 		};
+		
+		// Replace the image with the new selected one
+		// need to update the specific attribute image with this iamge
+		const onSelectImage = function(selectedImage, selectedImages, selectedImageIndex) {
+			// const replaceImage = images.find(image => image.id === index);
+			// console.log(replaceImage);
 
-		const onSelectImages = function(images) {
-			setAttributes({
-				images: images.map(img => {
+			console.log(selectedImages);
+			const updatedImg = selectedImages.map(img => {
+				console.log(img.id, selectedImageIndex);
+
+				if(img.id === selectedImageIndex) {
 					return {
-						id: img.id,
+						id: selectedImageIndex,
+						imgid: selectedImage.id,
+						url: selectedImage.sizes.full.url,
+						alt: selectedImage.alt,
+						caption: selectedImage.caption
+					};
+				} else {
+					return img;
+				}
+			});
+			// console.log(selectedImage);
+			// console.log(selectedImageIndex);
+			// console.log(updatedImg);
+
+			setAttributes({
+				images: updatedImg
+			});
+		};
+		const onSelectImages = function(selectedImages) {
+			setAttributes({
+				images: selectedImages.map((img, index) => {
+					return {
+						id: index,
+						imgid: img.id,
 						url: img.sizes.full.url,
 						alt: img.alt,
 						caption: img.caption
@@ -114,25 +145,58 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		// 	</div>
 		// );
 
+		// <img src={img.url} alt={img.alt} />
+		// 						<div className="button-container">
+		// 							<Button
+		// 								onClick={removeImage(img)}
+		// 								className="button button-large"
+		// 							>
+		// 								Remove image
+		// 							</Button>
+		// 						</div>
+
+		//https://wordpress.stackexchange.com/questions/303749/only-show-focused-toolbar-for-gutenberg-block-with-multiple-text-fields
+
 		if (images.length > 0) {
+			// console.log(images);
 			return (
-				<Fragment>
-					{images.map((img, index) => {
+				<div class="HELLOIMGBTNS">
+					{images.map((img, imgMapIndex) => {
 						return [
-							<div>
-								<img src={img.url} alt={img.alt} />
-								<div className="button-container">
-									<Button
-										onClick={removeImage(img)}
-										className="button button-large"
-									>
-										Remove image
-									</Button>
-								</div>
-							</div>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={selectedImg => onSelectImage(selectedImg, images, imgMapIndex)}
+									type="image"
+									value={img.imgid}
+									accept="image/*"
+									type="image"
+									render={({ open }) => (
+										<div>
+											<Button
+												className={
+													img.imgid ? "image-button" : "button button-large"
+												}
+												onClick={open}
+											>
+												<img src={img.url} />
+											</Button>
+											<div className="button-container">
+												<Button
+													className={
+														img.imgid ? "image-button" : "button button-large"
+													}
+													onClick={removeImage(img)}
+												>
+													Remove Image
+												</Button>
+											</div>
+										</div>
+									)}
+								/>
+							</MediaUploadCheck>
 						];
 					})}
-				</Fragment>
+				</div>
 			);
 		} else {
 			return (
