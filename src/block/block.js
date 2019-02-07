@@ -77,21 +77,35 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 			);
 		};
 
-		const removeImage = function(image) {
-			// console.log(image);
-		};
-		
+		function removeImage(removeImg, currentImages) {
+			// We want to reset the ID's back to 0,1,2
+			// so we count the true instances of the filter
+			let trueIndexCounter = 0;
+			const updatedImages = currentImages.filter(img => {
+				if (img.id != removeImg.id) {
+					return {
+						id: trueIndexCounter++,
+						imgid: img.id,
+						url: img.url,
+						alt: img.alt,
+						caption: img.caption
+					};
+				}
+			});
+			setAttributes({
+				images: updatedImages
+			});
+		}
+
 		// Replace the image with the new selected one
 		// need to update the specific attribute image with this iamge
-		const onSelectImage = function(selectedImage, selectedImages, selectedImageIndex) {
-			// const replaceImage = images.find(image => image.id === index);
-			// console.log(replaceImage);
-
-			console.log(selectedImages);
-			const updatedImg = selectedImages.map(img => {
-				console.log(img.id, selectedImageIndex);
-
-				if(img.id === selectedImageIndex) {
+		const onSelectImage = function(
+			selectedImage,
+			selectedImages,
+			selectedImageIndex
+		) {
+			const updatedImages = selectedImages.map(img => {
+				if (img.id === selectedImageIndex) {
 					return {
 						id: selectedImageIndex,
 						imgid: selectedImage.id,
@@ -103,69 +117,39 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					return img;
 				}
 			});
-			// console.log(selectedImage);
-			// console.log(selectedImageIndex);
-			// console.log(updatedImg);
-
 			setAttributes({
-				images: updatedImg
+				images: updatedImages
 			});
 		};
+
+		// Add an id to the array of selected images and update the img attribute
 		const onSelectImages = function(selectedImages) {
+			const updatedImages = selectedImages.map((img, index) => {
+				return {
+					id: index,
+					imgid: img.id,
+					url: img.sizes.full.url,
+					alt: img.alt,
+					caption: img.caption
+				};
+			});
 			setAttributes({
-				images: selectedImages.map((img, index) => {
-					return {
-						id: index,
-						imgid: img.id,
-						url: img.sizes.full.url,
-						alt: img.alt,
-						caption: img.caption
-					};
-				})
+				images: updatedImages
 			});
 		};
-
-		// return (
-		// 	<div>
-		// 		<MediaPlaceholder
-		// 			icon="format-gallery"
-		// 			onSelect={onSelectImages}
-		// 			accept="image/*"
-		// 			type="image"
-		// 			multiple
-		// 		/>
-		// 		<MediaUpload
-		// 			onSelect={media => {
-		// 				setAttributes({ imageAlt: media.alt, imageUrl: media.url });
-		// 			}}
-		// 			type="image"
-		// 			value={attributes.imageID}
-		// 			render={({ open }) => getImageButton(open)}
-		// 		/>
-		// 	</div>
-		// );
-
-		// <img src={img.url} alt={img.alt} />
-		// 						<div className="button-container">
-		// 							<Button
-		// 								onClick={removeImage(img)}
-		// 								className="button button-large"
-		// 							>
-		// 								Remove image
-		// 							</Button>
-		// 						</div>
 
 		//https://wordpress.stackexchange.com/questions/303749/only-show-focused-toolbar-for-gutenberg-block-with-multiple-text-fields
-
 		if (images.length > 0) {
-			// console.log(images);
+			console.log(images);
 			return (
 				<div class="HELLOIMGBTNS">
 					{images.map((img, imgMapIndex) => {
 						return [
 							<MediaUploadCheck>
 								<MediaUpload
-									onSelect={selectedImg => onSelectImage(selectedImg, images, imgMapIndex)}
+									onSelect={selectedImg =>
+										onSelectImage(selectedImg, images, imgMapIndex)
+									}
 									type="image"
 									value={img.imgid}
 									accept="image/*"
@@ -180,19 +164,19 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 											>
 												<img src={img.url} />
 											</Button>
-											<div className="button-container">
-												<Button
-													className={
-														img.imgid ? "image-button" : "button button-large"
-													}
-													onClick={removeImage(img)}
-												>
-													Remove Image
-												</Button>
-											</div>
 										</div>
 									)}
 								/>
+								<div className="button-container">
+									<Button
+										className={"button button-large"}
+										onClick={() => {
+											removeImage(img, images);
+										}}
+									>
+										Remove Image
+									</Button>
+								</div>
 							</MediaUploadCheck>
 						];
 					})}
