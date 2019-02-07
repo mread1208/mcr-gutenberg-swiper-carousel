@@ -78,14 +78,14 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		};
 
 		function removeImage(removeImg, currentImages) {
-			// We want to reset the ID's back to 0,1,2
-			// so we count the true instances of the filter
-			let trueIndexCounter = 0;
-			const updatedImages = currentImages.filter(img => {
+			// Filter out the image we're deleting
+			const filterImages = currentImages.filter(img => img.id != removeImg.id);
+			// Reset the ID's to the new index
+			const updatedImages = filterImages.map((img, index) => {
 				if (img.id != removeImg.id) {
 					return {
-						id: trueIndexCounter++,
-						imgid: img.id,
+						id: index,
+						imgid: img.imgid,
 						url: img.url,
 						alt: img.alt,
 						caption: img.caption
@@ -97,6 +97,17 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 			});
 		}
 
+		function addImage(selectedImage, selectedImages, selectedImageIndex) {
+			console.log(selectedImages);
+			console.log(selectedImageIndex);
+			const insertNewImage = selectedImages.splice(
+				selectedImageIndex,
+				0,
+				selectedImage
+			);
+			console.log(insertNewImage);
+		}
+
 		// Replace the image with the new selected one
 		// need to update the specific attribute image with this iamge
 		const onSelectImage = function(
@@ -104,6 +115,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 			selectedImages,
 			selectedImageIndex
 		) {
+			console.log("onSelectImage");
 			const updatedImages = selectedImages.map(img => {
 				if (img.id === selectedImageIndex) {
 					return {
@@ -142,42 +154,55 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		if (images.length > 0) {
 			console.log(images);
 			return (
-				<div class="HELLOIMGBTNS">
+				<div>
 					{images.map((img, imgMapIndex) => {
 						return [
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={selectedImg =>
-										onSelectImage(selectedImg, images, imgMapIndex)
-									}
-									type="image"
-									value={img.imgid}
-									accept="image/*"
-									type="image"
-									render={({ open }) => (
-										<div>
-											<Button
-												className={
-													img.imgid ? "image-button" : "button button-large"
-												}
-												onClick={open}
-											>
-												<img src={img.url} />
-											</Button>
-										</div>
-									)}
-								/>
-								<div className="button-container">
-									<Button
-										className={"button button-large"}
-										onClick={() => {
-											removeImage(img, images);
-										}}
-									>
-										Remove Image
-									</Button>
-								</div>
-							</MediaUploadCheck>
+							<div class="media-row">
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={selectedImg =>
+											onSelectImage(selectedImg, images, imgMapIndex)
+										}
+										type="image"
+										value={img.imgid}
+										accept="image/*"
+										type="image"
+										render={({ open }) => (
+											<div>
+												<Button className={"image-button"} onClick={open}>
+													<img src={img.url} />
+												</Button>
+											</div>
+										)}
+									/>
+									<div className="button-container">
+										<Button
+											className={"button button-large"}
+											onClick={() => {
+												removeImage(img, images);
+											}}
+										>
+											Remove Image
+										</Button>
+										<MediaUpload
+											onSelect={selectedImg =>
+												addImage(selectedImg, images, imgMapIndex)
+											}
+											type="image"
+											accept="image/*"
+											type="image"
+											render={({ open }) => (
+												<Button
+													className={"button button-large"}
+													onClick={open}
+												>
+													Add Image
+												</Button>
+											)}
+										/>
+									</div>
+								</MediaUploadCheck>
+							</div>
 						];
 					})}
 				</div>
