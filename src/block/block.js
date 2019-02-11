@@ -250,18 +250,19 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	save: function(props) {
+	save: function({ attributes }) {
+		const { images } = attributes;
+		console.log(images);
 		return (
 			<div
 				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
 			>
 				<div class="swiper-wrapper mcr-swiper-wrapper">
-					<div class="swiper-slide mcr-swiper-slide">
-						<img src="https://via.placeholder.com/1090x450" alt="" />
-					</div>
-					<div class="swiper-slide mcr-swiper-slide">
-						<img src="https://via.placeholder.com/1090x450" alt="" />
-					</div>
+					{images.forEach(img => {
+						<div class="swiper-slide mcr-swiper-slide">
+							<img src={img.url} src={img.alt} />
+						</div>;
+					})}
 				</div>
 				<div class="swiper-pagination mcr-swiper-pagination" />
 
