@@ -98,14 +98,28 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		}
 
 		function addImage(selectedImage, selectedImages, selectedImageIndex) {
-			console.log(selectedImages);
-			console.log(selectedImageIndex);
-			const insertNewImage = selectedImages.splice(
-				selectedImageIndex,
-				0,
-				selectedImage
-			);
-			console.log(insertNewImage);
+			const updatedImage = {
+				id: selectedImageIndex,
+				imgid: selectedImage.id,
+				url: selectedImage.sizes.full.url,
+				alt: selectedImage.alt,
+				caption: selectedImage.caption
+			};
+			// Insert our new image into the array after the current index.
+			selectedImages.splice(selectedImageIndex + 1, 0, updatedImage);
+			const updatedImages = selectedImages.map((img, index) => {
+				return {
+					id: index,
+					imgid: img.id,
+					url: img.url,
+					alt: img.alt,
+					caption: img.caption
+				};
+			});
+
+			setAttributes({
+				images: updatedImages
+			});
 		}
 
 		// Replace the image with the new selected one
@@ -115,7 +129,6 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 			selectedImages,
 			selectedImageIndex
 		) {
-			console.log("onSelectImage");
 			const updatedImages = selectedImages.map(img => {
 				if (img.id === selectedImageIndex) {
 					return {
@@ -185,8 +198,8 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 											Remove Image
 										</Button>
 										<MediaUpload
-											onSelect={selectedImg =>
-												addImage(selectedImg, images, imgMapIndex)
+											onSelect={selectedImage =>
+												addImage(selectedImage, images, imgMapIndex)
 											}
 											type="image"
 											accept="image/*"
