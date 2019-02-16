@@ -58,8 +58,8 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
 
-	edit: function({ attributes, className, setAttributes }) {
-		const { images } = attributes;
+	edit: function(props) {
+		const { images } = props.attributes;
 
 		const getImageButton = openEvent => {
 			return (
@@ -92,7 +92,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					};
 				}
 			});
-			setAttributes({
+			props.setAttributes({
 				images: updatedImages
 			});
 		}
@@ -117,7 +117,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				};
 			});
 
-			setAttributes({
+			props.setAttributes({
 				images: updatedImages
 			});
 		}
@@ -142,7 +142,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					return img;
 				}
 			});
-			setAttributes({
+			props.setAttributes({
 				images: updatedImages
 			});
 		};
@@ -158,14 +158,13 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					caption: img.caption
 				};
 			});
-			setAttributes({
+			props.setAttributes({
 				images: updatedImages
 			});
 		};
 
 		//https://wordpress.stackexchange.com/questions/303749/only-show-focused-toolbar-for-gutenberg-block-with-multiple-text-fields
 		if (images.length > 0) {
-			console.log(images);
 			return (
 				<div>
 					{images.map((img, imgMapIndex) => {
@@ -223,10 +222,10 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		} else {
 			return (
 				<Fragment>
-					<div className={className}>
+					<div className={props.className}>
 						<MediaPlaceholder
 							icon="format-gallery"
-							className={className}
+							className={props.className}
 							labels={{
 								title: __("Carousel"),
 								name: __("images")
@@ -250,24 +249,26 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	save: function({ attributes }) {
-		const { images } = attributes;
-		console.log(images);
+	save: function(props) {
+		const { images } = props.attributes;
 		return (
 			<div
 				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
 			>
-				<div class="swiper-wrapper mcr-swiper-wrapper">
-					{images.forEach(img => {
-						<div class="swiper-slide mcr-swiper-slide">
-							<img src={img.url} src={img.alt} />
-						</div>;
-					})}
+				<div className="swiper-wrapper mcr-swiper-wrapper">
+					{JSON.stringify(images)}
+					{/* {images.map((image, index) => {
+						return (
+							<div className="swiper-slide mcr-swiper-slide">
+								<img src={image.url} src={image.alt} />
+							</div>
+						);
+					})} */}
 				</div>
-				<div class="swiper-pagination mcr-swiper-pagination" />
+				<div className="swiper-pagination mcr-swiper-pagination" />
 
-				<div class="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
-				<div class="js-mcr-swiper-button-next swiper-button-next mcr-swiper-button-next" />
+				<div className="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
+				<div className="js-mcr-swiper-button-next swiper-button-next mcr-swiper-button-next" />
 			</div>
 		);
 	}
