@@ -256,17 +256,15 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
 			>
 				<div className="swiper-wrapper mcr-swiper-wrapper">
-					{JSON.stringify(images)}
-					{/* {images.map((image, index) => {
+					{images.map((image, index) => {
 						return (
 							<div className="swiper-slide mcr-swiper-slide">
-								<img src={image.url} src={image.alt} />
+								<img src={image.url} alt={image.alt} />
 							</div>
 						);
-					})} */}
+					})}
 				</div>
-				<div className="swiper-pagination mcr-swiper-pagination" />
-
+				<div className="swiper-pagination js-mcr-swiper-pagination" />
 				<div className="js-mcr-swiper-button-prev swiper-button-prev mcr-swiper-button-prev" />
 				<div className="js-mcr-swiper-button-next swiper-button-next mcr-swiper-button-next" />
 			</div>
