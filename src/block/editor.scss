@@ -7,3 +7,19 @@
 
 .wp-block-cgb-block-mcr-image-carousel {
 }
+
+.mcr-media-row {
+	position: relative;
+	margin-bottom: 8px;
+}
+
+.mcr-media-row--delete-button {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+}
+
+.mcr-media-row--add-button {
+	width: 100%;
+	padding: 1px 7px 2px;
+}

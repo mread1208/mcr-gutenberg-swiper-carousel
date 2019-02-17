@@ -61,22 +61,6 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	edit: function(props) {
 		const { images } = props.attributes;
 
-		const getImageButton = openEvent => {
-			return (
-				<div>
-					<img src={images.imageUrl} onClick={openEvent} className="image" />
-					<div className="button-container">
-						<Button onClick={openEvent} className="button button-large">
-							Add an image
-						</Button>
-						<Button onClick={openEvent} className="button button-large">
-							Remove image
-						</Button>
-					</div>
-				</div>
-			);
-		};
-
 		function removeImage(removeImg, currentImages) {
 			// Filter out the image we're deleting
 			const filterImages = currentImages.filter(img => img.id != removeImg.id);
@@ -87,6 +71,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 						id: index,
 						imgid: img.imgid,
 						url: img.url,
+						thumbnailUrl: img.thumbnailUrl,
 						alt: img.alt,
 						caption: img.caption
 					};
@@ -102,6 +87,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				id: selectedImageIndex,
 				imgid: selectedImage.id,
 				url: selectedImage.sizes.full.url,
+				thumbnailUrl: selectedImage.sizes.thumbnail.url,
 				alt: selectedImage.alt,
 				caption: selectedImage.caption
 			};
@@ -112,6 +98,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					id: index,
 					imgid: img.id,
 					url: img.url,
+					thumbnailUrl: img.thumbnailUrl,
 					alt: img.alt,
 					caption: img.caption
 				};
@@ -135,6 +122,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 						id: selectedImageIndex,
 						imgid: selectedImage.id,
 						url: selectedImage.sizes.full.url,
+						thumbnailUrl: selectedImage.sizes.thumbnail.url,
 						alt: selectedImage.alt,
 						caption: selectedImage.caption
 					};
@@ -154,6 +142,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					id: index,
 					imgid: img.id,
 					url: img.sizes.full.url,
+					thumbnailUrl: img.sizes.thumbnail.url,
 					alt: img.alt,
 					caption: img.caption
 				};
@@ -169,7 +158,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				<div>
 					{images.map((img, imgMapIndex) => {
 						return [
-							<div class="media-row">
+							<div class="media-row mcr-media-row">
 								<MediaUploadCheck>
 									<MediaUpload
 										onSelect={selectedImg =>
@@ -179,23 +168,24 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 										value={img.imgid}
 										accept="image/*"
 										type="image"
+										className=""
 										render={({ open }) => (
-											<div>
-												<Button className={"image-button"} onClick={open}>
-													<img src={img.url} />
-												</Button>
-											</div>
+											<Button className={"image-button"} onClick={open}>
+												<img src={img.thumbnailUrl} />
+											</Button>
 										)}
 									/>
-									<div className="button-container">
+									<div className="mcr-media-row--delete-button">
 										<Button
 											className={"button button-large"}
 											onClick={() => {
 												removeImage(img, images);
 											}}
 										>
-											Remove Image
+											X
 										</Button>
+									</div>
+									<div className="mcr-media-row--add-button">
 										<MediaUpload
 											onSelect={selectedImage =>
 												addImage(selectedImage, images, imgMapIndex)
