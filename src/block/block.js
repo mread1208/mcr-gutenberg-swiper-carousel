@@ -11,9 +11,14 @@ import "./editor.scss";
 
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
-const { MediaUpload, MediaPlaceholder, MediaUploadCheck } = wp.editor;
-const { Button } = wp.components;
+const { registerBlockType, RichText } = wp.blocks; // Import registerBlockType() from wp.blocks
+const {
+	MediaUpload,
+	MediaPlaceholder,
+	MediaUploadCheck,
+	InspectorControls
+} = wp.editor;
+const { Button, PanelBody, PanelRow } = wp.components;
 
 /**
  * Register: aa Gutenberg Block.
@@ -35,17 +40,13 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	category: "common", // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
 	keywords: [__("mcr-image-carousel"), __("Image Carousel")],
 	attributes: {
-		imageAlt: {
-			attribute: "alt",
-			selector: ".card__image"
-		},
-		imageUrl: {
-			attribute: "src",
-			selector: ".card__image"
-		},
 		images: {
 			type: "array",
 			default: []
+		},
+		loop: {
+			type: "string",
+			default: "true"
 		}
 	},
 
@@ -59,7 +60,15 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 */
 
 	edit: function(props) {
-		const { images } = props.attributes;
+		const { images, loop } = props.attributes;
+
+		function setLoopSetting(event) {
+			const selected = event.target.querySelector(
+				"#mcr-carousel-loop-setting option:checked"
+			);
+			props.setAttributes({ loop: selected.value });
+			event.preventDefault();
+		}
 
 		function removeImage(removeImg, currentImages) {
 			// Filter out the image we're deleting
@@ -154,8 +163,25 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 
 		//https://wordpress.stackexchange.com/questions/303749/only-show-focused-toolbar-for-gutenberg-block-with-multiple-text-fields
 		if (images.length > 0) {
-			return (
-				<div>
+			return [
+				<InspectorControls>
+					<PanelBody title={__("Carousel Settings")}>
+						<PanelRow>
+							<label>Loop</label>
+							<form onSubmit={setLoopSetting}>
+								<select
+									id="mcr-carousel-loop-setting"
+									value={loop}
+									onChange={setLoopSetting}
+								>
+									<option value="true">True</option>
+									<option value="false">False</option>
+								</select>
+							</form>
+						</PanelRow>
+					</PanelBody>
+				</InspectorControls>,
+				<Fragment>
 					{images.map((img, imgMapIndex) => {
 						return [
 							<div class="media-row mcr-media-row">
@@ -171,7 +197,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 										className=""
 										render={({ open }) => (
 											<Button className={"image-button"} onClick={open}>
-												<img src={img.thumbnailUrl} />
+												<img src={img.url} />
 											</Button>
 										)}
 									/>
@@ -207,8 +233,8 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 							</div>
 						];
 					})}
-				</div>
-			);
+				</Fragment>
+			];
 		} else {
 			return (
 				<Fragment>
@@ -240,10 +266,11 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
 	save: function(props) {
-		const { images } = props.attributes;
+		const { images, loop } = props.attributes;
 		return (
 			<div
 				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
+				data-mcr-carousel-loop={loop}
 			>
 				<div className="swiper-wrapper mcr-swiper-wrapper">
 					{images.map((image, index) => {
