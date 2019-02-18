@@ -47,6 +47,10 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 		loop: {
 			type: "string",
 			default: "true"
+		},
+		speed: {
+			type: "string",
+			default: "500"
 		}
 	},
 
@@ -60,13 +64,20 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 */
 
 	edit: function(props) {
-		const { images, loop } = props.attributes;
+		const { images, loop, speed } = props.attributes;
 
 		function setLoopSetting(event) {
 			const selected = event.target.querySelector(
 				"#mcr-carousel-loop-setting option:checked"
 			);
 			props.setAttributes({ loop: selected.value });
+			event.preventDefault();
+		}
+		function setSpeedSetting(event) {
+			const speedInput = event.target.querySelector(
+				"#mcr-carousel-speed-setting"
+			);
+			props.setAttributes({ speed: speedInput.value });
 			event.preventDefault();
 		}
 
@@ -167,6 +178,16 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				<InspectorControls>
 					<PanelBody title={__("Carousel Settings")}>
 						<PanelRow>
+							<label>Speed</label>
+							<form onSubmit={setSpeedSetting}>
+								<input
+									type="text"
+									id="mcr-carousel-speed-setting"
+									value={speed}
+								/>
+							</form>
+						</PanelRow>
+						<PanelRow>
 							<label>Loop</label>
 							<form onSubmit={setLoopSetting}>
 								<select
@@ -266,11 +287,12 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
 	save: function(props) {
-		const { images, loop } = props.attributes;
+		const { images, loop, speed } = props.attributes;
 		return (
 			<div
 				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
 				data-mcr-carousel-loop={loop}
+				data-mcr-carousel-speed={speed}
 			>
 				<div className="swiper-wrapper mcr-swiper-wrapper">
 					{images.map((image, index) => {
