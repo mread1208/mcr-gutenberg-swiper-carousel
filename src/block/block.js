@@ -18,7 +18,14 @@ const {
 	MediaUploadCheck,
 	InspectorControls
 } = wp.editor;
-const { Button, PanelBody, PanelRow } = wp.components;
+const {
+	Button,
+	PanelBody,
+	PanelRow,
+	TextControl,
+	SelectControl,
+	RadioControl
+} = wp.components;
 
 /**
  * Register: aa Gutenberg Block.
@@ -44,13 +51,25 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 			type: "array",
 			default: []
 		},
-		loop: {
+		autoplay: {
 			type: "string",
 			default: "true"
 		},
 		speed: {
 			type: "string",
 			default: "500"
+		},
+		delay: {
+			type: "string",
+			default: "5000"
+		},
+		loop: {
+			type: "string",
+			default: "true"
+		},
+		effect: {
+			type: "string",
+			default: "slide"
 		}
 	},
 
@@ -64,21 +83,17 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 */
 
 	edit: function(props) {
-		const { images, loop, speed } = props.attributes;
+		const { images, autoplay, loop, speed, delay, effect } = props.attributes;
 
-		function setLoopSetting(event) {
+		function updateSliderSetting(event) {
 			const selected = event.target.querySelector(
 				"#mcr-carousel-loop-setting option:checked"
 			);
 			props.setAttributes({ loop: selected.value });
 			event.preventDefault();
 		}
-		function setSpeedSetting(event) {
-			const speedInput = event.target.querySelector(
-				"#mcr-carousel-speed-setting"
-			);
-			props.setAttributes({ speed: speedInput.value });
-			event.preventDefault();
+		function updateSliderSetting(value) {
+			props.setAttributes(value);
 		}
 
 		function removeImage(removeImg, currentImages) {
@@ -178,27 +193,64 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				<InspectorControls>
 					<PanelBody title={__("Carousel Settings")}>
 						<PanelRow>
-							<label>Speed</label>
-							<form onSubmit={setSpeedSetting}>
-								<input
-									type="text"
-									id="mcr-carousel-speed-setting"
-									value={speed}
-								/>
-							</form>
+							<RadioControl
+								label="Auto Play"
+								selected={autoplay}
+								options={[
+									{ label: "True", value: "true" },
+									{ label: "False", value: "false" }
+								]}
+								onChange={option => {
+									updateSliderSetting({ autoplay: option });
+								}}
+							/>
 						</PanelRow>
 						<PanelRow>
-							<label>Loop</label>
-							<form onSubmit={setLoopSetting}>
-								<select
-									id="mcr-carousel-loop-setting"
-									value={loop}
-									onChange={setLoopSetting}
-								>
-									<option value="true">True</option>
-									<option value="false">False</option>
-								</select>
-							</form>
+							<TextControl
+								label="Delay"
+								value={delay}
+								onChange={option => {
+									updateSliderSetting({ delay: option });
+								}}
+							/>
+						</PanelRow>
+						<PanelRow>
+							<TextControl
+								label="Speed"
+								value={speed}
+								onChange={option => {
+									updateSliderSetting({ speed: option });
+								}}
+							/>
+						</PanelRow>
+						<PanelRow>
+							<RadioControl
+								label="Loop"
+								selected={loop}
+								options={[
+									{ label: "True", value: "true" },
+									{ label: "False", value: "false" }
+								]}
+								onChange={option => {
+									updateSliderSetting({ loop: option });
+								}}
+							/>
+						</PanelRow>
+						<PanelRow>
+							<SelectControl
+								label="Effect"
+								selected={effect}
+								options={[
+									{ label: "Slide", value: "slide" },
+									{ label: "Fade", value: "fade" },
+									{ label: "Cube", value: "cube" },
+									{ label: "Coverflow", value: "coverflow" },
+									{ label: "Flip", value: "flip" }
+								]}
+								onChange={option => {
+									updateSliderSetting({ effect: option });
+								}}
+							/>
 						</PanelRow>
 					</PanelBody>
 				</InspectorControls>,
@@ -287,12 +339,15 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
 	save: function(props) {
-		const { images, loop, speed } = props.attributes;
+		const { images, autoplay, loop, speed, delay, effect } = props.attributes;
 		return (
 			<div
 				className={`swiper-container mcr-swiper-container js-mcr-swiper-container`}
+				data-mcr-carousel-autoplay={autoplay}
+				data-mcr-carousel-delay={delay}
 				data-mcr-carousel-loop={loop}
 				data-mcr-carousel-speed={speed}
+				data-mcr-carousel-effect={effect}
 			>
 				<div className="swiper-wrapper mcr-swiper-wrapper">
 					{images.map((image, index) => {

@@ -33,12 +33,54 @@ if (window.Swiper === undefined) {
 			if (speed != null) {
 				swiperOptions["speed"] = parseFloat(speed);
 			}
+			var autoplay = swiperSliders[i].getAttribute(
+				"data-mcr-carousel-autoplay"
+			);
+			if (autoplay != null) {
+				var autoplayValue = autoplay === "true" ? true : false;
+				var delay = swiperSliders[i].getAttribute("data-mcr-carousel-delay")
+					? parseFloat(swiperSliders[i].getAttribute("data-mcr-carousel-delay"))
+					: "4000";
+				if (autoplayValue) {
+					swiperOptions["autoplay"] = {
+						delay: delay
+					};
+				} else {
+					swiperOptions["autoplay"] = false;
+				}
+			}
 			var loop = swiperSliders[i].getAttribute("data-mcr-carousel-loop");
 			if (loop != null) {
 				swiperOptions["loop"] = loop === "true" ? true : false;
 			}
-			console.log(swiperOptions);
+			var effect = swiperSliders[i].getAttribute("data-mcr-carousel-effect");
+			if (effect != null) {
+				if (effect === "fade") {
+					swiperOptions["fadeEffect"] = {
+						crossFade: true
+					};
+				}
+				if (effect === "cube") {
+					swiperOptions["cubeEffect"] = {
+						slideShadows: false
+					};
+				}
+				if (effect === "coverflow") {
+					swiperOptions["coverflowEffect"] = {
+						rotate: 30,
+						slideShadows: false
+					};
+				}
+				if (effect === "flip") {
+					swiperOptions["flipEffect"] = {
+						rotate: 30,
+						slideShadows: false
+					};
+				}
+			}
 			new Swiper(swiperSliders[i], swiperOptions);
+
+			console.log(swiperOptions);
 		}
 	})();
 }
