@@ -1,1 +1,14 @@
-.swiper-slide img{width:100%;height:auto}
+/**
+ * #.# Common SCSS
+ *
+ * Can include things like variables and mixins
+ * that are used across the project.
+*/
+/**
+ * #.# Styles
+ *
+ * CSS for both Frontend+Backend.
+ */
+.swiper-slide img {
+  width: 100%;
+  height: auto; }
