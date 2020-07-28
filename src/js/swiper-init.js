@@ -4,7 +4,7 @@ if (window.Swiper === undefined) {
 		"You must include the Swiper library (http://idangero.us/swiper/) in order for this controller to work."
 	);
 } else {
-	var swiper = (function() {
+	var swiper = (function () {
 		var swiperSliders = document.getElementsByClassName(
 			"js-mcr-swiper-container"
 		);
@@ -12,16 +12,16 @@ if (window.Swiper === undefined) {
 			var swiperOptions = {
 				navigation: {
 					nextEl: ".js-mcr-swiper-button-next",
-					prevEl: ".js-mcr-swiper-button-prev"
+					prevEl: ".js-mcr-swiper-button-prev",
 				},
 				pagination: {
-					el: ".js-mcr-swiper-pagination"
+					el: ".js-mcr-swiper-pagination",
 				},
 				speed: 500,
 				slidesPerView: 1,
 				autoplay: {
-					delay: 4000
-				}
+					delay: 4000,
+				},
 			};
 			// Set the options if the data attribute has been defined
 			// We can add more as we need them: http://idangero.us/swiper/api/
@@ -43,7 +43,7 @@ if (window.Swiper === undefined) {
 					: "4000";
 				if (autoplayValue) {
 					swiperOptions["autoplay"] = {
-						delay: delay
+						delay: delay,
 					};
 				} else {
 					swiperOptions["autoplay"] = false;
@@ -57,30 +57,28 @@ if (window.Swiper === undefined) {
 			if (effect != null) {
 				if (effect === "fade") {
 					swiperOptions["fadeEffect"] = {
-						crossFade: true
+						crossFade: true,
 					};
 				}
 				if (effect === "cube") {
 					swiperOptions["cubeEffect"] = {
-						slideShadows: false
+						slideShadows: false,
 					};
 				}
 				if (effect === "coverflow") {
 					swiperOptions["coverflowEffect"] = {
 						rotate: 30,
-						slideShadows: false
+						slideShadows: false,
 					};
 				}
 				if (effect === "flip") {
 					swiperOptions["flipEffect"] = {
 						rotate: 30,
-						slideShadows: false
+						slideShadows: false,
 					};
 				}
 			}
 			new Swiper(swiperSliders[i], swiperOptions);
-
-			console.log(swiperOptions);
 		}
 	})();
 }

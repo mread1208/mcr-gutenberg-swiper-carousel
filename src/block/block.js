@@ -16,7 +16,7 @@ const {
 	MediaUpload,
 	MediaPlaceholder,
 	MediaUploadCheck,
-	InspectorControls
+	InspectorControls,
 } = wp.editor;
 const {
 	Button,
@@ -24,7 +24,7 @@ const {
 	PanelRow,
 	TextControl,
 	SelectControl,
-	RadioControl
+	RadioControl,
 } = wp.components;
 
 /**
@@ -49,28 +49,28 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	attributes: {
 		images: {
 			type: "array",
-			default: []
+			default: [],
 		},
 		autoplay: {
 			type: "string",
-			default: "true"
+			default: "true",
 		},
 		speed: {
 			type: "string",
-			default: "500"
+			default: "500",
 		},
 		delay: {
 			type: "string",
-			default: "5000"
+			default: "5000",
 		},
 		loop: {
 			type: "string",
-			default: "true"
+			default: "true",
 		},
 		effect: {
 			type: "string",
-			default: "slide"
-		}
+			default: "slide",
+		},
 	},
 
 	/**
@@ -82,7 +82,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
 
-	edit: function(props) {
+	edit: function (props) {
 		const { images, autoplay, loop, speed, delay, effect } = props.attributes;
 
 		function updateSliderSetting(event) {
@@ -98,7 +98,9 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 
 		function removeImage(removeImg, currentImages) {
 			// Filter out the image we're deleting
-			const filterImages = currentImages.filter(img => img.id != removeImg.id);
+			const filterImages = currentImages.filter(
+				(img) => img.id != removeImg.id
+			);
 			// Reset the ID's to the new index
 			const updatedImages = filterImages.map((img, index) => {
 				if (img.id != removeImg.id) {
@@ -106,14 +108,14 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 						id: index,
 						imgid: img.imgid,
 						url: img.url,
-						thumbnailUrl: img.thumbnailUrl,
 						alt: img.alt,
-						caption: img.caption
+						caption: img.caption,
+						sliderImgTitle: img.sliderImgTitle,
 					};
 				}
 			});
 			props.setAttributes({
-				images: updatedImages
+				images: updatedImages,
 			});
 		}
 
@@ -122,9 +124,9 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				id: selectedImageIndex,
 				imgid: selectedImage.id,
 				url: selectedImage.sizes.full.url,
-				thumbnailUrl: selectedImage.sizes.thumbnail.url,
 				alt: selectedImage.alt,
-				caption: selectedImage.caption
+				caption: selectedImage.caption,
+				sliderImgTitle: selectedImage.sliderImgTitle,
 			};
 			// Insert our new image into the array after the current index.
 			selectedImages.splice(selectedImageIndex + 1, 0, updatedImage);
@@ -133,57 +135,79 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 					id: index,
 					imgid: img.id,
 					url: img.url,
-					thumbnailUrl: img.thumbnailUrl,
 					alt: img.alt,
-					caption: img.caption
+					caption: img.caption,
+					sliderImgTitle: img.sliderImgTitle,
 				};
 			});
 
 			props.setAttributes({
-				images: updatedImages
+				images: updatedImages,
 			});
 		}
 
 		// Replace the image with the new selected one
 		// need to update the specific attribute image with this iamge
-		const onSelectImage = function(
+		const onSelectImage = function (
 			selectedImage,
 			selectedImages,
 			selectedImageIndex
 		) {
-			const updatedImages = selectedImages.map(img => {
+			const updatedImages = selectedImages.map((img) => {
 				if (img.id === selectedImageIndex) {
 					return {
 						id: selectedImageIndex,
 						imgid: selectedImage.id,
 						url: selectedImage.sizes.full.url,
-						thumbnailUrl: selectedImage.sizes.thumbnail.url,
 						alt: selectedImage.alt,
-						caption: selectedImage.caption
+						caption: selectedImage.caption,
+						sliderImgTitle: selectedImage.sliderImgTitle,
 					};
 				} else {
 					return img;
 				}
 			});
 			props.setAttributes({
-				images: updatedImages
+				images: updatedImages,
 			});
 		};
 
 		// Add an id to the array of selected images and update the img attribute
-		const onSelectImages = function(selectedImages) {
+		const onSelectImages = function (selectedImages) {
 			const updatedImages = selectedImages.map((img, index) => {
 				return {
 					id: index,
 					imgid: img.id,
 					url: img.sizes.full.url,
-					thumbnailUrl: img.sizes.thumbnail.url,
 					alt: img.alt,
-					caption: img.caption
+					caption: img.caption,
+					sliderImgTitle: img.sliderImgTitle,
 				};
 			});
 			props.setAttributes({
-				images: updatedImages
+				images: updatedImages,
+			});
+		};
+
+		const setImageState = function (sliderImgTitle, currentImages, imageIndex) {
+			console.log(currentImages);
+			const updatedImages = currentImages.map((img) => {
+				if (img.id === imageIndex) {
+					return {
+						id: imageIndex,
+						imgid: img.id,
+						url: img.sizes.full.url,
+						alt: img.alt,
+						caption: img.caption,
+						sliderImgTitle: img.sliderImgTitle,
+					};
+				} else {
+					return img;
+				}
+			});
+
+			props.setAttributes({
+				images: updatedImages,
 			});
 		};
 
@@ -198,9 +222,9 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 								selected={autoplay}
 								options={[
 									{ label: "True", value: "true" },
-									{ label: "False", value: "false" }
+									{ label: "False", value: "false" },
 								]}
-								onChange={option => {
+								onChange={(option) => {
 									updateSliderSetting({ autoplay: option });
 								}}
 							/>
@@ -209,7 +233,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 							<TextControl
 								label="Delay"
 								value={delay}
-								onChange={option => {
+								onChange={(option) => {
 									updateSliderSetting({ delay: option });
 								}}
 							/>
@@ -218,7 +242,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 							<TextControl
 								label="Speed"
 								value={speed}
-								onChange={option => {
+								onChange={(option) => {
 									updateSliderSetting({ speed: option });
 								}}
 							/>
@@ -229,9 +253,9 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 								selected={loop}
 								options={[
 									{ label: "True", value: "true" },
-									{ label: "False", value: "false" }
+									{ label: "False", value: "false" },
 								]}
-								onChange={option => {
+								onChange={(option) => {
 									updateSliderSetting({ loop: option });
 								}}
 							/>
@@ -245,9 +269,9 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 									{ label: "Fade", value: "fade" },
 									{ label: "Cube", value: "cube" },
 									{ label: "Coverflow", value: "coverflow" },
-									{ label: "Flip", value: "flip" }
+									{ label: "Flip", value: "flip" },
 								]}
-								onChange={option => {
+								onChange={(option) => {
 									updateSliderSetting({ effect: option });
 								}}
 							/>
@@ -260,7 +284,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 							<div class="media-row mcr-media-row">
 								<MediaUploadCheck>
 									<MediaUpload
-										onSelect={selectedImg =>
+										onSelect={(selectedImg) =>
 											onSelectImage(selectedImg, images, imgMapIndex)
 										}
 										type="image"
@@ -269,7 +293,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 										type="image"
 										className=""
 										render={({ open }) => (
-											<Button className={"image-button"} onClick={open}>
+											<Button className={"mcr-image-button"} onClick={open}>
 												<img src={img.url} />
 											</Button>
 										)}
@@ -286,7 +310,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 									</div>
 									<div className="mcr-media-row--add-button">
 										<MediaUpload
-											onSelect={selectedImage =>
+											onSelect={(selectedImage) =>
 												addImage(selectedImage, images, imgMapIndex)
 											}
 											type="image"
@@ -301,12 +325,19 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 												</Button>
 											)}
 										/>
+										<TextControl
+											label="Slider Image Title"
+											value={img.sliderImgTitle}
+											onChange={(sliderImgTitle) =>
+												setImageState({ sliderImgTitle, images, imgMapIndex })
+											}
+										/>
 									</div>
 								</MediaUploadCheck>
-							</div>
+							</div>,
 						];
 					})}
-				</Fragment>
+				</Fragment>,
 			];
 		} else {
 			return (
@@ -317,9 +348,9 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 							className={props.className}
 							labels={{
 								title: __("Carousel"),
-								name: __("images")
+								name: __("images"),
 							}}
-							onSelect={onSelectImages}
+							onSelect={(media) => onSelectImages(media)}
 							accept="image/*"
 							type="image"
 							multiple
@@ -338,7 +369,7 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	save: function(props) {
+	save: function (props) {
 		const { images, autoplay, loop, speed, delay, effect } = props.attributes;
 		return (
 			<div
@@ -363,5 +394,5 @@ registerBlockType("cgb/block-mcr-image-carousel", {
 				<div className="js-mcr-swiper-button-next swiper-button-next mcr-swiper-button-next" />
 			</div>
 		);
-	}
+	},
 });

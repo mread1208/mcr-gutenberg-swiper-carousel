@@ -22,3 +22,6 @@
 .mcr-media-row--add-button {
   width: 100%;
   padding: 1px 7px 2px; }
+
+.mcr-image-button {
+  height: auto; }
